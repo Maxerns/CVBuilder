@@ -14,6 +14,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,41 +56,51 @@ public GUIViewer(List<User> users) {
     setSize(600, 400);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-      tabbedPane = new JTabbedPane();
-        // Create tabs for different user attributes
-        JPanel userTitlePanel = new JPanel();
-        userTitlePanel.setLayout(new BoxLayout(userTitlePanel, BoxLayout.Y_AXIS));
-        tabbedPane.addTab("User Title", userTitlePanel);
+  tabbedPane = new JTabbedPane();
 
-        JPanel userNamePanel = new JPanel();
-        userNamePanel.setLayout(new BoxLayout(userNamePanel, BoxLayout.Y_AXIS));
-        tabbedPane.addTab("User Name", userNamePanel);
+    // Create tabs for different user attributes
+    JPanel userTitlePanel = new JPanel();
+    userTitlePanel.setLayout(new BoxLayout(userTitlePanel, BoxLayout.Y_AXIS));
+    tabbedPane.addTab("User Title", userTitlePanel);
 
-        JPanel userEmailPanel = new JPanel();
-        userEmailPanel.setLayout(new BoxLayout(userEmailPanel, BoxLayout.Y_AXIS));
-        tabbedPane.addTab("User Email", userEmailPanel);
+    JPanel userNamePanel = new JPanel();
+    userNamePanel.setLayout(new BoxLayout(userNamePanel, BoxLayout.Y_AXIS));
+    tabbedPane.addTab("User Name", userNamePanel);
 
-        // Add user profiles to the respective tabs
-        int userCount = 1;
-        for (User user : users) {
-            // Create UserPanel instances for each user attribute
-            UserPanel userTitlePanel1 = new UserPanel(userCount, "User " + userCount, user.getTitle());
+    JPanel userEmailPanel = new JPanel();
+    userEmailPanel.setLayout(new BoxLayout(userEmailPanel, BoxLayout.Y_AXIS));
+    tabbedPane.addTab("User Email", userEmailPanel);
+
+    // Add user profiles to the respective tabs
+    int userCount = 1;
+    for (User user : users) {
+        String[] titles = user.getTitle().split(",");
+        String[] names = user.getName().split(",");
+        String[] emails = user.getEmail().split(",");
+
+        for (String title : titles) {
+            UserPanel userTitlePanel1 = new UserPanel(userCount, "User " + userCount, title.trim());
             userTitlePanel.add(userTitlePanel1);
             userTitlePanel1.setUser(user); // Associate UserPanel with User object
-
-            UserPanel userNamePanel1 = new UserPanel(userCount, "User " + userCount, user.getName());
-            userNamePanel.add(userNamePanel1);
-            userNamePanel1.setUser(user); // Associate UserPanel with User object
-
-            UserPanel userEmailPanel1 = new UserPanel(userCount, "User " + userCount, user.getEmail());
-            userEmailPanel.add(userEmailPanel1);
-            userEmailPanel1.setUser(user); // Associate UserPanel with User object
-
-            userCount++;
         }
 
-        add(tabbedPane);
+        for (String name : names) {
+            UserPanel userNamePanel1 = new UserPanel(userCount, "User " + userCount, name.trim());
+            userNamePanel.add(userNamePanel1);
+            userNamePanel1.setUser(user); // Associate UserPanel with User object
+        }
+
+        for (String email : emails) {
+            UserPanel userEmailPanel1 = new UserPanel(userCount, "User " + userCount, email.trim());
+            userEmailPanel.add(userEmailPanel1);
+            userEmailPanel1.setUser(user); // Associate UserPanel with User object
+        }
+
+        userCount++;
     }
+
+    add(tabbedPane);
+}
 
     public void showViewer() {
         setVisible(true);
@@ -116,28 +127,53 @@ public GUIViewer(List<User> users) {
         }
     }
 
-    public List<User> readUserProfilesFromFile() {
-        String filePath = "userprofile.csv";
-        List<User> users = new ArrayList<>();
+public List<User> readUserProfilesFromFile() {
+    String filePath = "data\\cv_repo_3.csv";
+    List<User> users = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] fields = line.split(",");
-                String userProfileID = fields[0];
-                String title = fields[1];
-                String name = fields[2];
-                String email = fields[3];
-                User user = new User(userProfileID, title, name, email);
-                users.add(user);
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        String userProfileID = "";
+        String title = "";
+        String name = "";
+        String email = "";
+        boolean isUserSection = false;
+
+        while ((line = reader.readLine()) != null) {
+            String[] fields = line.split(",");
+            if (fields[0].equalsIgnoreCase("Section") && fields[1].equalsIgnoreCase("Sub-Section")) {
+                // Skip the header line
+                continue;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        return users;
+            if (fields[0].equalsIgnoreCase("User")) {
+                isUserSection = true;
+            } else {
+                isUserSection = false;
+            }
+
+            if (isUserSection) {
+                if (fields[1].equalsIgnoreCase("Name")) {
+                    name = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                } else if (fields[1].equalsIgnoreCase("Title")) {
+                    title = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                } else if (fields[1].equalsIgnoreCase("Email")) {
+                    email = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                    User user = new User(userProfileID, title, name, email);
+                    users.add(user);
+                    userProfileID = "";
+                    title = "";
+                    name = "";
+                    email = "";
+                }
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
     }
-    
+
+    return users;
+}
 }
 
              
