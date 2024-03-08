@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JFrame;
@@ -71,6 +72,10 @@ public GUIViewer(List<User> users) {
     userEmailPanel.setLayout(new BoxLayout(userEmailPanel, BoxLayout.Y_AXIS));
     tabbedPane.addTab("User Email", userEmailPanel);
 
+    JPanel referencePanel = new JPanel();
+    referencePanel.setLayout(new BoxLayout(referencePanel, BoxLayout.Y_AXIS));
+    tabbedPane.addTab("References", referencePanel);
+    
     // Add user profiles to the respective tabs
     int userCount = 1;
     for (User user : users) {
@@ -94,8 +99,11 @@ public GUIViewer(List<User> users) {
             UserPanel userEmailPanel1 = new UserPanel(userCount, "User " + userCount, email.trim());
             userEmailPanel.add(userEmailPanel1);
             userEmailPanel1.setUser(user); // Associate UserPanel with User object
+           
+             ReferencePanel referencePanel1 = new ReferencePanel(user.getReferences());
+        referencePanel.add(referencePanel1);
         }
-
+        
         userCount++;
     }
 
@@ -137,7 +145,9 @@ public List<User> readUserProfilesFromFile() {
         String title = "";
         String name = "";
         String email = "";
+        String references = "";
         boolean isUserSection = false;
+        boolean isReferenceSection = false;
 
         while ((line = reader.readLine()) != null) {
             String[] fields = line.split(",");
@@ -148,8 +158,13 @@ public List<User> readUserProfilesFromFile() {
 
             if (fields[0].equalsIgnoreCase("User")) {
                 isUserSection = true;
+                isReferenceSection = false;
+            } else if (fields[0].equalsIgnoreCase("References")) {
+                isUserSection = false;
+                isReferenceSection = true;
             } else {
                 isUserSection = false;
+                isReferenceSection = false;
             }
 
             if (isUserSection) {
@@ -159,12 +174,29 @@ public List<User> readUserProfilesFromFile() {
                     title = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
                 } else if (fields[1].equalsIgnoreCase("Email")) {
                     email = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                    User user = new User(userProfileID, title, name, email);
+                    User user = new User(userProfileID, title, name, email, references);
                     users.add(user);
                     userProfileID = "";
                     title = "";
                     name = "";
                     email = "";
+                }
+            } else if (isReferenceSection) {
+                if (fields[1].equalsIgnoreCase("Referee 1") || fields[1].equalsIgnoreCase("Referee 2")) {
+                    String referenceText = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                    referenceText = referenceText.replaceAll("%%%%", " ");
+                    referenceText = referenceText.replaceAll("////", ",");
+                    references += referenceText + "\n";
+                }
+
+                if (isReferenceSection && fields[1].equalsIgnoreCase("Referee 2")) {
+                    User user = new User(userProfileID, title, name, email, references);
+                    users.add(user);
+                    userProfileID = "";
+                    title = "";
+                    name = "";
+                    email = "";
+                    references = "";
                 }
             }
         }
@@ -175,6 +207,3 @@ public List<User> readUserProfilesFromFile() {
     return users;
 }
 }
-
-             
-

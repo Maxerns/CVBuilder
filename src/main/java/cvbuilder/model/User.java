@@ -15,12 +15,14 @@ public class User
         private String title;
         private String name;
         private String email;
+        private String references;
 
-        public User(String userProfileID, String title, String name, String email) {
+        public User(String userProfileID, String title, String name, String email, String references) {
             this.userProfileID = userProfileID;
             this.title = title;
             this.name = name;
             this.email = email;
+            this.references = references;
         }
 
         public String getUserProfileID() {
@@ -39,6 +41,10 @@ public class User
             return email;
         }
         
+           public String getReferences() {
+        return references;
+    }
+        
         
     @Override
     public String toString()
@@ -51,6 +57,7 @@ public class User
         return String.format("{\nuserProfileID:%s\ntitle:%s\nname:%s\nemail:%s\n}\n",
                 userProfileID, title, name, email);
     }
+
 }
 
 

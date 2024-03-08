@@ -30,6 +30,7 @@ public class UserPanel extends JPanel implements ActionListener {
     private String data;
     private int userCount;
     private User user;
+    private String references;
 
     public UserPanel(int userCount, String dataType, String data) {
         this.userCount = userCount;
@@ -122,7 +123,7 @@ public class UserPanel extends JPanel implements ActionListener {
                 String name = nameField.getText();
                 String email = emailField.getText();
 
-                User newUser = new User(userProfileID, title, name, email);
+                User newUser = new User(userProfileID, title, name, email, references);
                 appendToCSVFile(newUser);
             }
         }
