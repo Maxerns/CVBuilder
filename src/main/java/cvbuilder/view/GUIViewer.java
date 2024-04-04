@@ -5,6 +5,8 @@
 package cvbuilder.view;
 
 import cvbuilder.model.User;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -27,7 +29,7 @@ import java.util.Map;
  */
 public class GUIViewer extends JFrame implements ActionListener {
 
-    private JTabbedPane tabbedPane;
+    private JTabbedPane mainTabbedPane;
     private static GUIViewer instance;
 
     private GUIViewer() {
@@ -54,65 +56,80 @@ public GUIViewer(List<User> users) {
     openItem.addActionListener(this);
 
     setTitle("User Profiler");
-    setSize(600, 400);
+    setSize(800, 600);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-  tabbedPane = new JTabbedPane();
-
-    // Create tabs for different user attributes
-    JPanel userTitlePanel = new JPanel();
-    userTitlePanel.setLayout(new BoxLayout(userTitlePanel, BoxLayout.Y_AXIS));
-    tabbedPane.addTab("User Title", userTitlePanel);
-
-    JPanel userNamePanel = new JPanel();
-    userNamePanel.setLayout(new BoxLayout(userNamePanel, BoxLayout.Y_AXIS));
-    tabbedPane.addTab("User Name", userNamePanel);
-
-    JPanel userEmailPanel = new JPanel();
-    userEmailPanel.setLayout(new BoxLayout(userEmailPanel, BoxLayout.Y_AXIS));
-    tabbedPane.addTab("User Email", userEmailPanel);
-
-    JPanel referencePanel = new JPanel();
-    referencePanel.setLayout(new BoxLayout(referencePanel, BoxLayout.Y_AXIS));
-    tabbedPane.addTab("References", referencePanel);
     
-    // Add user profiles to the respective tabs
-    int userCount = 1;
-    for (User user : users) {
-        String[] titles = user.getTitle().split(",");
-        String[] names = user.getName().split(",");
-        String[] emails = user.getEmail().split(",");
+        mainTabbedPane = new JTabbedPane();
 
-        for (String title : titles) {
-            UserPanel userTitlePanel1 = new UserPanel(userCount, "User " + userCount, title.trim());
-            userTitlePanel.add(userTitlePanel1);
-            userTitlePanel1.setUser(user); // Associate UserPanel with User object
+        // Create a tabbed pane for User
+        JTabbedPane userTabbedPane = new JTabbedPane();
+        mainTabbedPane.addTab("User", userTabbedPane);
+
+        JPanel namePanel = new JPanel(new GridLayout(0, 1)); // GridLayout with dynamic rows
+        userTabbedPane.addTab("Name", namePanel);
+
+        JPanel titlePanel = new JPanel(new GridLayout(0, 1));
+        userTabbedPane.addTab("Title", titlePanel);
+
+        JPanel emailPanel = new JPanel(new GridLayout(0, 1));
+        userTabbedPane.addTab("Email", emailPanel);
+
+        // Create a tabbed pane for References
+        JTabbedPane referencesTabbedPane = new JTabbedPane();
+        mainTabbedPane.addTab("References", referencesTabbedPane);
+
+        JPanel referee1Panel = new JPanel(new GridLayout(0, 1));
+        referencesTabbedPane.addTab("Referee 1", referee1Panel);
+
+        JPanel referee2Panel = new JPanel(new GridLayout(0, 1));
+        referencesTabbedPane.addTab("Referee 2", referee2Panel);
+
+        JPanel referee3Panel = new JPanel(new GridLayout(0, 1));
+        referencesTabbedPane.addTab("Referee 3", referee3Panel);
+
+        // Add user profiles and references to the respective panels
+        for (User user : users) {
+            // Add user details to the respective panels
+            String[] names = user.getName().split(",");
+            for (String name : names) {
+                namePanel.add(new UserPanel(0, "Name", name.trim()));
+            }
+
+            String[] titles = user.getTitle().split(",");
+            for (String title : titles) {
+                titlePanel.add(new UserPanel(0, "Title", title.trim()));
+            }
+
+            String[] emails = user.getEmail().split(",");
+            for (String email : emails) {
+                emailPanel.add(new UserPanel(0, "Email", email.trim()));
+            }
+
+            // Add references to the respective panels
+            String[] references = user.getReferences().split("\n");
+            int refereeCount = 1;
+            for (String reference : references) {
+                JPanel refereePanel;
+                if (refereeCount == 1) {
+                    refereePanel = referee1Panel;
+                } else if (refereeCount == 2) {
+                    refereePanel = referee2Panel;
+                } else {
+                    refereePanel = referee3Panel;
+                }
+                refereePanel.add(new ReferencePanel(reference));
+                refereeCount++;
+            }
         }
 
-        for (String name : names) {
-            UserPanel userNamePanel1 = new UserPanel(userCount, "User " + userCount, name.trim());
-            userNamePanel.add(userNamePanel1);
-            userNamePanel1.setUser(user); // Associate UserPanel with User object
-        }
-
-        for (String email : emails) {
-            UserPanel userEmailPanel1 = new UserPanel(userCount, "User " + userCount, email.trim());
-            userEmailPanel.add(userEmailPanel1);
-            userEmailPanel1.setUser(user); // Associate UserPanel with User object
-           
-             ReferencePanel referencePanel1 = new ReferencePanel(user.getReferences());
-        referencePanel.add(referencePanel1);
-        }
-        
-        userCount++;
+        add(mainTabbedPane, BorderLayout.CENTER);
     }
-
-    add(tabbedPane);
-}
 
     public void showViewer() {
         setVisible(true);
     }
+
     
 //    for (User user : User) {
 //    UserPanel userPanel = new UserPanel(User);

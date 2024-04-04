@@ -24,7 +24,6 @@ public class UserPanel extends JPanel implements ActionListener {
     private JRadioButton dataRadioButton;
     private JButton editButton;
     private JButton deleteButton;
-    private JButton displayProfileButton;
     private JButton addProfileButton;
     private String dataType;
     private String data;
@@ -44,20 +43,17 @@ public class UserPanel extends JPanel implements ActionListener {
 
         editButton = new JButton("Edit");
         deleteButton = new JButton("Delete");
-        displayProfileButton = new JButton("Display Profile");
         addProfileButton = new JButton("Add Profile");
 
-        displayProfileButton.addActionListener(this);
         editButton.addActionListener(this);
         deleteButton.addActionListener(this);
         addProfileButton.addActionListener(this);
 
-        Dimension buttonSize = new Dimension(80, 20);
-        Dimension buttonSize1 = new Dimension(120, 20);
+        Dimension buttonSize = new Dimension(80, 15);
+        Dimension buttonSize1 = new Dimension(120, 15);
 
         editButton.setPreferredSize(buttonSize);
         deleteButton.setPreferredSize(buttonSize);
-        displayProfileButton.setPreferredSize(buttonSize1);
         addProfileButton.setPreferredSize(buttonSize1);
 
         JPanel centerPanel = new JPanel();
@@ -67,7 +63,6 @@ public class UserPanel extends JPanel implements ActionListener {
         add(centerPanel, BorderLayout.CENTER);
 
         JPanel outsidePanel = new JPanel();
-        outsidePanel.add(displayProfileButton);
         outsidePanel.add(addProfileButton);
         add(outsidePanel, BorderLayout.SOUTH);
 
@@ -91,13 +86,6 @@ public class UserPanel extends JPanel implements ActionListener {
                 parent.remove(this);
                 parent.revalidate();
                 parent.repaint();
-            }
-        } else if (e.getActionCommand().equals("Display Profile")) {
-            if (user != null) {
-                
-                System.out.println("afa");
-            } else {
-                System.out.println("No user associated with this panel.");
             }
         } else if (e.getActionCommand().equals("Add Profile")) {
             JTextField userProfileIDField = new JTextField(10);
