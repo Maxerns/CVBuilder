@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import javax.swing.JFrame;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,23 +43,22 @@ public class GUIViewer extends JFrame implements ActionListener {
         return instance;
     }
 
-public GUIViewer(List<User> users) {
-    JMenuBar jmb = new JMenuBar();
-    JMenu fileMenu = new JMenu("File");
-    JMenuItem openItem = new JMenuItem("Open");
-    JMenuItem quitItem = new JMenuItem("Quit");
-    fileMenu.add(openItem);
-    fileMenu.add(quitItem);
-    jmb.add(fileMenu);
-    setJMenuBar(jmb);
-    quitItem.addActionListener(this);
-    openItem.addActionListener(this);
+    public GUIViewer(List<User> users) {
+        JMenuBar jmb = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        JMenuItem openItem = new JMenuItem("Open");
+        JMenuItem quitItem = new JMenuItem("Quit");
+        fileMenu.add(openItem);
+        fileMenu.add(quitItem);
+        jmb.add(fileMenu);
+        setJMenuBar(jmb);
+        quitItem.addActionListener(this);
+        openItem.addActionListener(this);
 
-    setTitle("User Profiler");
-    setSize(800, 600);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("User Profiler");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    
         mainTabbedPane = new JTabbedPane();
 
         // Create a tabbed pane for User
@@ -79,15 +78,6 @@ public GUIViewer(List<User> users) {
         JTabbedPane referencesTabbedPane = new JTabbedPane();
         mainTabbedPane.addTab("References", referencesTabbedPane);
 
-        JPanel referee1Panel = new JPanel(new GridLayout(0, 1));
-        referencesTabbedPane.addTab("Referee 1", referee1Panel);
-
-        JPanel referee2Panel = new JPanel(new GridLayout(0, 1));
-        referencesTabbedPane.addTab("Referee 2", referee2Panel);
-
-        JPanel referee3Panel = new JPanel(new GridLayout(0, 1));
-        referencesTabbedPane.addTab("Referee 3", referee3Panel);
-
         // Add user profiles and references to the respective panels
         for (User user : users) {
             // Add user details to the respective panels
@@ -102,40 +92,32 @@ public GUIViewer(List<User> users) {
             }
 
             String[] emails = user.getEmail().split(",");
-            for (String email : emails) {
-                emailPanel.add(new UserPanel(0, "Email", email.trim()));
-            }
+          for (String email : emails) {
+    emailPanel.add(new UserPanel(0, "Email", email.trim()));
+}
 
-            // Add references to the respective panels
-            String[] references = user.getReferences().split("\n");
-            int refereeCount = 1;
-            for (String reference : references) {
-                JPanel refereePanel;
-                if (refereeCount == 1) {
-                    refereePanel = referee1Panel;
-                } else if (refereeCount == 2) {
-                    refereePanel = referee2Panel;
-                } else {
-                    refereePanel = referee3Panel;
-                }
-                refereePanel.add(new ReferencePanel(reference));
-                refereeCount++;
-            }
-        }
+// Add references to the respective panels
+String[] references = user.getReferences().trim().split(",");
+for (int i = 0; i < references.length; i++) {
+    String reference = references[i];
+    ReferencePanel refPanel = new ReferencePanel(reference.trim());
 
-        add(mainTabbedPane, BorderLayout.CENTER);
+    // Add each reference to a separate tab
+    if (i == 0) {
+        referencesTabbedPane.addTab("Referee 1", refPanel);
+    } else if (i == 1) {
+        referencesTabbedPane.addTab("Referee 1", refPanel);
+    } else if (i == 2) {
+        referencesTabbedPane.addTab("Referee 2", refPanel);
     }
+}
 
-    public void showViewer() {
-        setVisible(true);
-    }
+add(mainTabbedPane, BorderLayout.CENTER); }
+}
 
-    
-//    for (User user : User) {
-//    UserPanel userPanel = new UserPanel(User);
-//    userPanel.add(userPanel);
-//
-//}
+public void showViewer() {
+    setVisible(true);
+}
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -152,75 +134,72 @@ public GUIViewer(List<User> users) {
         }
     }
 
-public List<User> readUserProfilesFromFile() {
-    String filePath = "data\\cv_repo_3.csv";
-    List<User> users = new ArrayList<>();
+    public List<User> readUserProfilesFromFile() {
+        String filePath = "data\\cv_repo_3.csv";
+        List<User> users = new ArrayList<>();
 
-    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-        String line;
-        String userProfileID = "";
-        String title = "";
-        String name = "";
-        String email = "";
-        String references = "";
-        boolean isUserSection = false;
-        boolean isReferenceSection = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            String title = "";
+            String name = "";
+            String email = "";
+            String references = "";
+            boolean isUserSection = false;
+            boolean isReferenceSection = false;
 
-        while ((line = reader.readLine()) != null) {
-            String[] fields = line.split(",");
-            if (fields[0].equalsIgnoreCase("Section") && fields[1].equalsIgnoreCase("Sub-Section")) {
-                // Skip the header line
-                continue;
-            }
-
-            if (fields[0].equalsIgnoreCase("User")) {
-                isUserSection = true;
-                isReferenceSection = false;
-            } else if (fields[0].equalsIgnoreCase("References")) {
-                isUserSection = false;
-                isReferenceSection = true;
-            } else {
-                isUserSection = false;
-                isReferenceSection = false;
-            }
-
-            if (isUserSection) {
-                if (fields[1].equalsIgnoreCase("Name")) {
-                    name = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                } else if (fields[1].equalsIgnoreCase("Title")) {
-                    title = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                } else if (fields[1].equalsIgnoreCase("Email")) {
-                    email = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                    User user = new User(userProfileID, title, name, email, references);
-                    users.add(user);
-                    userProfileID = "";
-                    title = "";
-                    name = "";
-                    email = "";
-                }
-            } else if (isReferenceSection) {
-                if (fields[1].equalsIgnoreCase("Referee 1") || fields[1].equalsIgnoreCase("Referee 2")) {
-                    String referenceText = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                    referenceText = referenceText.replaceAll("%%%%", " ");
-                    referenceText = referenceText.replaceAll("////", ",");
-                    references += referenceText + "\n";
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields[0].equalsIgnoreCase("Section") && fields[1].equalsIgnoreCase("Sub-Section")) {
+                    // Skip the header line
+                    continue;
                 }
 
-                if (isReferenceSection && fields[1].equalsIgnoreCase("Referee 2")) {
-                    User user = new User(userProfileID, title, name, email, references);
-                    users.add(user);
-                    userProfileID = "";
-                    title = "";
-                    name = "";
-                    email = "";
-                    references = "";
+                if (fields[0].equalsIgnoreCase("User")) {
+                    isUserSection = true;
+                    isReferenceSection = false;
+                } else if (fields[0].equalsIgnoreCase("References")) {
+                    isUserSection = false;
+                    isReferenceSection = true;
+                } else {
+                    isUserSection = false;
+                    isReferenceSection = false;
+                }
+
+                if (isUserSection) {
+                    if (fields[1].equalsIgnoreCase("Name")) {
+                        name = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                    } else if (fields[1].equalsIgnoreCase("Title")) {
+                        title = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                    } else if (fields[1].equalsIgnoreCase("Email")) {
+                        email = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                        User user = new User(title, name, email, references);
+                        users.add(user);
+                        title = "";
+                        name = "";
+                        email = "";
+                    }
+                } else if (isReferenceSection) {
+                    if (fields[1].equalsIgnoreCase("Referee 1") || fields[1].equalsIgnoreCase("Referee 2")) {
+                        String referenceText = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                        referenceText = referenceText.replaceAll("%%%%", " ");
+                        referenceText = referenceText.replaceAll("////", ",");
+                        references += referenceText + "\n";
+                    }
+
+                    if (isReferenceSection && fields[1].equalsIgnoreCase("Referee 2")) {
+                        User user = new User(title, name, email, references);
+                        users.add(user);
+                        title = "";
+                        name = "";
+                        email = "";
+                        references = "";
+                    }
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
 
-    return users;
-}
+        return users;
+    }
 }

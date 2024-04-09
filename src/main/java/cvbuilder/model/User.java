@@ -11,22 +11,16 @@ package cvbuilder.model;
 public class User
 {
     
-        private String userProfileID;
         private String title;
         private String name;
         private String email;
         private String references;
 
-        public User(String userProfileID, String title, String name, String email, String references) {
-            this.userProfileID = userProfileID;
+        public User(String title, String name, String email, String references) {
             this.title = title;
             this.name = name;
             this.email = email;
             this.references = references;
-        }
-
-        public String getUserProfileID() {
-            return userProfileID;
         }
 
         public String getTitle() {
@@ -55,7 +49,7 @@ public class User
     
     public String getFormattedText() {
         return String.format("{\nuserProfileID:%s\ntitle:%s\nname:%s\nemail:%s\n}\n",
-                userProfileID, title, name, email);
+                title, name, email);
     }
 
 }

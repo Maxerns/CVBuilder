@@ -88,14 +88,11 @@ public class UserPanel extends JPanel implements ActionListener {
                 parent.repaint();
             }
         } else if (e.getActionCommand().equals("Add Profile")) {
-            JTextField userProfileIDField = new JTextField(10);
             JTextField titleField = new JTextField(10);
             JTextField nameField = new JTextField(10);
             JTextField emailField = new JTextField(10);
 
-            JPanel panel = new JPanel(new GridLayout(4, 2));
-            panel.add(new JLabel("UserProfileID:"));
-            panel.add(userProfileIDField);
+            JPanel panel = new JPanel(new GridLayout(3, 2));
             panel.add(new JLabel("Title:"));
             panel.add(titleField);
             panel.add(new JLabel("Name:"));
@@ -106,12 +103,11 @@ public class UserPanel extends JPanel implements ActionListener {
             int result = JOptionPane.showConfirmDialog(this, panel, "Add New User Profile", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (result == JOptionPane.OK_OPTION) {
-                String userProfileID = userProfileIDField.getText();
                 String title = titleField.getText();
                 String name = nameField.getText();
                 String email = emailField.getText();
 
-                User newUser = new User(userProfileID, title, name, email, references);
+                User newUser = new User(title, name, email, references);
                 appendToCSVFile(newUser);
             }
         }
@@ -119,21 +115,22 @@ public class UserPanel extends JPanel implements ActionListener {
 
     private void appendToCSVFile(User user) {
         try {
-            FileWriter fileWriter = new FileWriter("cv_repo_3.csv", true);
+            FileWriter fileWriter = new FileWriter("data\\cv_repo_3.csv", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-            bufferedWriter.write(user.getUserProfileID() + "," + user.getTitle() + "," + user.getName() + "," + user.getEmail());
+    
+            // Write user data in the required format
+            bufferedWriter.write("User,Title," + user.getTitle());
             bufferedWriter.newLine();
-
+            bufferedWriter.write("User,Name," + user.getName());
+            bufferedWriter.newLine();
+            bufferedWriter.write("User,Email," + user.getEmail());
+            bufferedWriter.newLine();
+    
             bufferedWriter.close();
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }
 
