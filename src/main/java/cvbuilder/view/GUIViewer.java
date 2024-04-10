@@ -14,6 +14,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -129,17 +132,32 @@ public void showViewer() {
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Quit")) {
             System.exit(0);
-        } else if (e.getActionCommand().equals("Open")) {
+        }  else if (e.getActionCommand().equals("Open")) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+
+                
+                File dataDir = new File("data");
+                if (!dataDir.exists()) {
+                  dataDir.mkdir();
+                }
+
+             // Copy the selected file to the "data\\" directory
+            File newFile = new File(dataDir, selectedFile.getName());
+            try {
+                Files.copy(selectedFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("File copied to: " + newFile.getAbsolutePath());
+            } catch (IOException ex) {
+               ex.printStackTrace();
             }
         }
+        }
     }
-
+    
     public List<User> readUserProfilesFromFile() {
         String filePath = "data\\cv_repo_3.csv";
         List<User> users = new ArrayList<>();
