@@ -89,13 +89,12 @@ public class UserPanel extends JPanel implements ActionListener {
             }
         } else if (e.getActionCommand().equals("Add Profile")) {
             JTextField titleField = new JTextField(10);
-            JCheckBox includeTitleCheckBox = new JCheckBox("Include");
             JTextField nameField = new JTextField(10);
             JTextField emailField = new JTextField(10);
 
             JPanel panel = new JPanel(new GridLayout(4, 2));
             panel.add(new JLabel("Title:"));
-            panel.add(includeTitleCheckBox);
+            panel.add(titleField);
             panel.add(new JLabel("Name:"));
             panel.add(nameField);
             panel.add(new JLabel("Email:"));
@@ -107,6 +106,18 @@ public class UserPanel extends JPanel implements ActionListener {
                 String title = titleField.getText();
                 String name = nameField.getText();
                 String email = emailField.getText();
+
+                // Making it so you have to have input for all the required fields
+                if (title.isEmpty() || name.isEmpty() || email.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "All fields must be filled out.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Validating if the email entered is a valid input
+                if (!email.contains("@") || email.indexOf('@') > email.lastIndexOf('.')) {
+                    JOptionPane.showMessageDialog(this, "Invalid email address. Please include '@' and a domain in the email.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
                 User newUser = new User(title, name, email, references);
                 appendToCSVFile(newUser);
