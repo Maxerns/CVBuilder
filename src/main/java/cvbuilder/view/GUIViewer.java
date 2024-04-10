@@ -69,6 +69,12 @@ public class GUIViewer extends JFrame implements ActionListener {
         userTabbedPane.addTab("Name", namePanel);
 
         JPanel titlePanel = new JPanel(new GridLayout(0, 1));
+        // Create the title checkbox
+        JCheckBox includeTitleCheckBox = new JCheckBox("Include");
+
+        // Add the title checkbox to the Title panel
+        titlePanel.add(includeTitleCheckBox);
+
         userTabbedPane.addTab("Title", titlePanel);
 
         JPanel emailPanel = new JPanel(new GridLayout(0, 1));

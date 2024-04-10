@@ -66,8 +66,8 @@ public class UserPanel extends JPanel implements ActionListener {
         outsidePanel.add(addProfileButton);
         add(outsidePanel, BorderLayout.SOUTH);
 
-        Border blackline = BorderFactory.createTitledBorder(dataType);
-        setBorder(blackline);
+        // Border blackline = BorderFactory.createTitledBorder(dataType);
+        // setBorder(blackline);
     }
 
     @Override
@@ -89,12 +89,13 @@ public class UserPanel extends JPanel implements ActionListener {
             }
         } else if (e.getActionCommand().equals("Add Profile")) {
             JTextField titleField = new JTextField(10);
+            JCheckBox includeTitleCheckBox = new JCheckBox("Include");
             JTextField nameField = new JTextField(10);
             JTextField emailField = new JTextField(10);
 
-            JPanel panel = new JPanel(new GridLayout(3, 2));
+            JPanel panel = new JPanel(new GridLayout(4, 2));
             panel.add(new JLabel("Title:"));
-            panel.add(titleField);
+            panel.add(includeTitleCheckBox);
             panel.add(new JLabel("Name:"));
             panel.add(nameField);
             panel.add(new JLabel("Email:"));
