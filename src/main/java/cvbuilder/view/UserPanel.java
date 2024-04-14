@@ -48,18 +48,17 @@ public class UserPanel extends JPanel implements ActionListener {
 
         editButton = new JButton("Edit");
         deleteButton = new JButton("Delete");
-        addProfileButton = new JButton("Add Profile");
+        
 
         editButton.addActionListener(this);
         deleteButton.addActionListener(this);
-        addProfileButton.addActionListener(this);
+        
 
         Dimension buttonSize = new Dimension(80, 15);
-        Dimension buttonSize1 = new Dimension(120, 15);
-
+        
         editButton.setPreferredSize(buttonSize);
         deleteButton.setPreferredSize(buttonSize);
-        addProfileButton.setPreferredSize(buttonSize1);
+        
 
         JPanel centerPanel = new JPanel();
         centerPanel.add(dataRadioButton);
@@ -67,9 +66,6 @@ public class UserPanel extends JPanel implements ActionListener {
         centerPanel.add(deleteButton);
         add(centerPanel, BorderLayout.CENTER);
 
-         JPanel outsidePanel = new JPanel();
-         outsidePanel.add(addProfileButton);
-         add(outsidePanel, BorderLayout.SOUTH);
     }
 
     public void addNavigationButtons() {
@@ -79,10 +75,14 @@ public class UserPanel extends JPanel implements ActionListener {
     
         nextSectionButton = new JButton("Next Section");
         nextSectionButton.addActionListener(this);
+
+        addProfileButton = new JButton("Add Profile");
+        addProfileButton.addActionListener(this);
     
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(prevSectionButton);
         buttonPanel.add(nextSectionButton);
+        buttonPanel.add(addProfileButton);
     
         add(buttonPanel, BorderLayout.SOUTH);
     }
