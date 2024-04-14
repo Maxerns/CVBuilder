@@ -76,12 +76,15 @@ public class UserPanel extends JPanel implements ActionListener {
 
         prevSectionButton = new JButton("Previous Section");
         prevSectionButton.addActionListener(this);
-        add(prevSectionButton, BorderLayout.WEST);
-        
+    
         nextSectionButton = new JButton("Next Section");
         nextSectionButton.addActionListener(this);
-        add(nextSectionButton, BorderLayout.EAST);
     
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(prevSectionButton);
+        buttonPanel.add(nextSectionButton);
+    
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     @Override

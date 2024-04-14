@@ -126,8 +126,10 @@ public class GUIViewer extends JFrame implements ActionListener {
 
         // Create a tabbed pane for References
         JTabbedPane referencesTabbedPane = new JTabbedPane();
+        
         mainTabbedPane.addTab("References", referencesTabbedPane);
 
+        
         // Add user profiles and references to the respective panels
         for (User user : users) {
             // Add user details to the respective panels
@@ -146,21 +148,23 @@ public class GUIViewer extends JFrame implements ActionListener {
                 emailPanel.add(new UserPanel("Email", email.trim())); // Create a UserPanel for each email and add it to the email panel
             }
 
-            // Add references to the respective panels
-            String[] references = user.getReferences().trim().split(",");
-            for (int i = 0; i < references.length; i++) {
-                String reference = references[i];
-                ReferencePanel refPanel = new ReferencePanel(reference.trim()); // Create a ReferencePanel for each reference
+            
 
-                // Add each reference to a separate tab
-                if (i == 0) {
-                    referencesTabbedPane.addTab("Referee 1", refPanel);
-                } else if (i == 1) {
-                    referencesTabbedPane.addTab("Referee 1", refPanel);
-                } else if (i == 2) {
-                    referencesTabbedPane.addTab("Referee 2", refPanel);
-                }
-            }
+            // Add references to the respective panels
+String[] references = user.getReferences().trim().split(",");
+for (int i = 0; i < references.length; i++) {
+    String reference = references[i];
+    ReferencePanel refPanel = createReferencePanel(reference); // Use the new method to create the ReferencePanel
+
+    // Add each reference to a separate tab
+    if (i == 0) {
+        referencesTabbedPane.addTab("Referee 1", refPanel);
+    } else if (i == 1) {
+        referencesTabbedPane.addTab("Referee 2", refPanel);
+    } else if (i == 2) {
+        referencesTabbedPane.addTab("Referee 3", refPanel);
+    }
+}
         }
 
         add(mainTabbedPane, BorderLayout.CENTER); // Add the main tabbed pane to the center of the frame
@@ -282,5 +286,11 @@ public class GUIViewer extends JFrame implements ActionListener {
             users.addAll(readUserProfilesFromFile(file));
         }
         return users;
+    }
+
+    private ReferencePanel createReferencePanel(String reference) {
+        ReferencePanel refPanel = new ReferencePanel(reference.trim());
+        refPanel.addNavigationButtons();
+        return refPanel;
     }
 }

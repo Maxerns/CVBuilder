@@ -11,12 +11,14 @@ package cvbuilder.view;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
+import java.awt.*;  
+import java.awt.event.*;  
 
-
-public class ReferencePanel extends JPanel {
+public class ReferencePanel extends JPanel implements ActionListener {
     public ReferencePanel(String referenceText) {
         setLayout(new BorderLayout());
 
@@ -38,5 +40,28 @@ public class ReferencePanel extends JPanel {
         }
 
         add(innerPanel, BorderLayout.CENTER);
+    }
+
+    
+    public void addNavigationButtons() {
+
+        JButton prevSectionButton = new JButton("Previous Section");
+        prevSectionButton.addActionListener(this);
+    
+        JButton nextSectionButton = new JButton("Next Section");
+        nextSectionButton.addActionListener(this);
+    
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(prevSectionButton);
+        buttonPanel.add(nextSectionButton);
+    
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
     }
 }
