@@ -27,12 +27,11 @@ public class UserPanel extends JPanel implements ActionListener {
     private JButton addProfileButton;
     private String dataType;
     private String data;
-    private int userCount;
-    private User user;
     private String references;
 
-    public UserPanel(int userCount, String dataType, String data) {
-        this.userCount = userCount;
+
+    public UserPanel(String dataType, String data) {
+
         this.dataType = dataType;
         this.data = data;
         setLayout(new BorderLayout());
@@ -62,13 +61,14 @@ public class UserPanel extends JPanel implements ActionListener {
         centerPanel.add(deleteButton);
         add(centerPanel, BorderLayout.CENTER);
 
-        JPanel outsidePanel = new JPanel();
-        outsidePanel.add(addProfileButton);
-        add(outsidePanel, BorderLayout.SOUTH);
+         JPanel outsidePanel = new JPanel();
+         outsidePanel.add(addProfileButton);
+         add(outsidePanel, BorderLayout.SOUTH);
 
-        // Border blackline = BorderFactory.createTitledBorder(dataType);
-        // setBorder(blackline);
+       
+
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {

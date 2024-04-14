@@ -81,7 +81,7 @@ public class GUIViewer extends JFrame implements ActionListener {
 
         setTitle("User Profiler");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 
         mainTabbedPane = new JTabbedPane();
 
@@ -113,17 +113,17 @@ public class GUIViewer extends JFrame implements ActionListener {
             // Add user details to the respective panels
             String[] names = user.getName().split(",");
             for (String name : names) {
-                namePanel.add(new UserPanel(0, "Name", name.trim())); // Create a UserPanel for each name and add it to the name panel
+                namePanel.add(new UserPanel("Name", name.trim())); // Create a UserPanel for each name and add it to the name panel
             }
 
             String[] titles = user.getTitle().split(",");
             for (String title : titles) {
-                titlePanel.add(new UserPanel(0, "Title", title.trim())); // Create a UserPanel for each title and add it to the title panel
+                titlePanel.add(new UserPanel("Title", title.trim())); // Create a UserPanel for each title and add it to the title panel
             }
 
             String[] emails = user.getEmail().split(",");
             for (String email : emails) {
-                emailPanel.add(new UserPanel(0, "Email", email.trim())); // Create a UserPanel for each email and add it to the email panel
+                emailPanel.add(new UserPanel("Email", email.trim())); // Create a UserPanel for each email and add it to the email panel
             }
 
             // Add references to the respective panels
@@ -145,6 +145,8 @@ public class GUIViewer extends JFrame implements ActionListener {
 
         add(mainTabbedPane, BorderLayout.CENTER); // Add the main tabbed pane to the center of the frame
     }
+
+    
 
     public void showViewer() {
         setVisible(true); // Set the GUIViewer frame visible
