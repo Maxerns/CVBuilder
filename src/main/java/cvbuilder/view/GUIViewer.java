@@ -81,7 +81,11 @@ public class GUIViewer extends JFrame implements ActionListener {
 
         setTitle("User Profiler");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // Create a new UserPanel and add navigation buttons
+        UserPanel userPanel = new UserPanel();
+        userPanel.addNavigationButtons();
 
         mainTabbedPane = new JTabbedPane();
 
@@ -89,19 +93,35 @@ public class GUIViewer extends JFrame implements ActionListener {
         JTabbedPane userTabbedPane = new JTabbedPane();
         mainTabbedPane.addTab("User", userTabbedPane);
 
-        JPanel namePanel = new JPanel(new GridLayout(0, 1)); // Create a panel with a grid layout for names
+        // Create a panel with a grid layout for names
+        JPanel namePanel = new JPanel(new GridLayout(0, 1));
+        // Create a new UserPanel and add navigation buttons
+        UserPanel userNamePanel = new UserPanel();
+        userNamePanel.addNavigationButtons();
+        // Add the UserPanel to the namePanel
+        namePanel.add(userNamePanel);
         userTabbedPane.addTab("Name", namePanel);
 
-        JPanel titlePanel = new JPanel(new GridLayout(0, 1)); // Create a panel with a grid layout for titles
+        JPanel titlePanel = new JPanel(new GridLayout(0, 1));
+        // Create a new UserPanel and add navigation buttons
+        UserPanel userTitlePanel = new UserPanel();
+        userTitlePanel.addNavigationButtons();
+        // Add the UserPanel to the titlePanel
+        titlePanel.add(userTitlePanel);
+        userTabbedPane.addTab("Title", titlePanel);
+
         // Create the title checkbox
         JCheckBox includeTitleCheckBox = new JCheckBox("Include");
 
         // Add the title checkbox to the Title panel
         titlePanel.add(includeTitleCheckBox);
 
-        userTabbedPane.addTab("Title", titlePanel);
-
-        JPanel emailPanel = new JPanel(new GridLayout(0, 1)); // Create a panel with a grid layout for emails
+        JPanel emailPanel = new JPanel(new GridLayout(0, 1)); 
+        // Create a new UserPanel and add navigation buttons
+        UserPanel userEmailPanel = new UserPanel();
+        userEmailPanel.addNavigationButtons();
+        // Add the UserPanel to the emailPanel
+        emailPanel.add(userEmailPanel);
         userTabbedPane.addTab("Email", emailPanel);
 
         // Create a tabbed pane for References

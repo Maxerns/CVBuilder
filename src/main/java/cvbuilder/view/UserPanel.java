@@ -25,10 +25,16 @@ public class UserPanel extends JPanel implements ActionListener {
     private JButton editButton;
     private JButton deleteButton;
     private JButton addProfileButton;
+    private JButton nextSectionButton;
+    private JButton prevSectionButton; 
     private String dataType;
     private String data;
     private String references;
 
+    public UserPanel()
+    {
+        //empty constructor
+    }
 
     public UserPanel(String dataType, String data) {
 
@@ -64,11 +70,19 @@ public class UserPanel extends JPanel implements ActionListener {
          JPanel outsidePanel = new JPanel();
          outsidePanel.add(addProfileButton);
          add(outsidePanel, BorderLayout.SOUTH);
-
-       
-
     }
 
+    public void addNavigationButtons() {
+
+        prevSectionButton = new JButton("Previous Section");
+        prevSectionButton.addActionListener(this);
+        add(prevSectionButton, BorderLayout.WEST);
+        
+        nextSectionButton = new JButton("Next Section");
+        nextSectionButton.addActionListener(this);
+        add(nextSectionButton, BorderLayout.EAST);
+    
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
