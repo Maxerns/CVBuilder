@@ -139,7 +139,33 @@ public class UserPanel extends JPanel implements ActionListener {
                 User newUser = new User(title, name, email, references);
                 appendToCSVFile(newUser);
             }
-        }
+        } else if (e.getActionCommand().equals("Next Section")) {
+            // Move to the next section
+            // Get the ancestor of the current component that is of type JTabbedPane
+            JTabbedPane tabbedPane = (JTabbedPane) SwingUtilities.getAncestorOfClass(JTabbedPane.class, this);
+            // Get the index of the currently selected tab
+            int currentIndex = tabbedPane.getSelectedIndex();
+            // Calculate the index of the next tab
+            int nextIndex = currentIndex + 1;
+            // Check if the next index is within the range of available tabs
+            if (nextIndex < tabbedPane.getTabCount()) {
+                // Set the next tab as the selected tab
+               tabbedPane.setSelectedIndex(nextIndex); 
+            }
+        } else if (e.getActionCommand().equals("Previous Section")) {
+            // Move to the previous section
+            // Get the ancestor of the current component that is of type JTabbedPane
+            JTabbedPane tabbedPane = (JTabbedPane) SwingUtilities.getAncestorOfClass(JTabbedPane.class, this);
+            // Get the index of the currently selected tab
+            int currentIndex = tabbedPane.getSelectedIndex();
+            // Calculate the index of the previous tab
+            int previousIndex = currentIndex - 1;
+            // Check if the previous index is within the range of available tabs
+            if (previousIndex >= 0) {
+                // Set the previous tab as the selected tab
+                tabbedPane.setSelectedIndex(previousIndex);
+            }
+        } 
     }
 
     private void appendToCSVFile(User user) {

@@ -79,13 +79,12 @@ public class GUIViewer extends JFrame implements ActionListener {
         quitItem.addActionListener(this);
         loadItem.addActionListener(this);
 
-        setTitle("User Profiler");
+        setTitle("Cv Builder");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // Create a new UserPanel and add navigation buttons
-        UserPanel userPanel = new UserPanel();
-        userPanel.addNavigationButtons();
+        
 
         mainTabbedPane = new JTabbedPane();
 
@@ -131,12 +130,12 @@ public class GUIViewer extends JFrame implements ActionListener {
 
         
         // Add user profiles and references to the respective panels
-        for (User user : users) {
+        for (User user : users) {   
             // Add user details to the respective panels
             String[] names = user.getName().split(",");
             for (String name : names) {
                 namePanel.add(new UserPanel("Name", name.trim())); // Create a UserPanel for each name and add it to the name panel
-            }
+            }  
 
             String[] titles = user.getTitle().split(",");
             for (String title : titles) {
