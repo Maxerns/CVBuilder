@@ -16,17 +16,14 @@ import javax.swing.SwingUtilities;
  */
 public class Main {
 
-    public static void main(String[] args) 
-    {
-        
+    public static void main(String[] args) {
 
- 
-    GUIViewer mainViewer = GUIViewer.getInstance(); 
-    List<User> users = mainViewer.readUserProfilesFromFile();
-    mainViewer = new GUIViewer(users); 
-    mainViewer.showViewer(); 
-    
-    
+    GUIViewer viewer = GUIViewer.getInstance(); 
+    List<User> users = viewer.readUserProfilesFromAllFiles();
+    viewer = new GUIViewer(users); 
+    viewer.showViewer(); 
+
+
 }
 
 }
