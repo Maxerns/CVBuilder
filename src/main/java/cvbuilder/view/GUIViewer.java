@@ -38,6 +38,12 @@ public class GUIViewer extends JFrame implements ActionListener {
     private List<File> filesToRead; // List of files to read
     private File lastAddedFile; // The last added file
     private Preferences prefs; // Preferences object to store the path of the last added file
+    private JButton prevSectionButton; // Button to navigate to the previous section
+    private JButton nextSectionButton; // Button to navigate to the next section
+    private JButton addProfileButton; // Button to add a new profile
+    private String prevSectionCommand; // Command for the previous section button
+    private String nextSectionCommand; // Command for the next section button
+    private String addProfileCommand; // Command for the add profile button   
 
     private GUIViewer() {
         filesToRead = new ArrayList<>();
@@ -82,11 +88,16 @@ public class GUIViewer extends JFrame implements ActionListener {
         setTitle("Cv Builder");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // Create a new UserPanel and add navigation buttons
-        
 
         mainTabbedPane = new JTabbedPane();
+
+         // Initialize the navigation buttons and action commands
+         prevSectionButton = new JButton("Previous Section");
+         nextSectionButton = new JButton("Next Section");
+         addProfileButton = new JButton("Add Profile");
+         prevSectionCommand = "Previous Section";
+         nextSectionCommand = "Next Section";
+         addProfileCommand = "Add Profile";
 
         // Create a tabbed pane for User
         JTabbedPane userTabbedPane = new JTabbedPane();
@@ -94,82 +105,76 @@ public class GUIViewer extends JFrame implements ActionListener {
 
         // Create a panel with a grid layout for names
         JPanel namePanel = new JPanel(new GridLayout(0, 1));
-        // Create a new UserPanel and add navigation buttons
         UserPanel userNamePanel = new UserPanel();
-        userNamePanel.addNavigationButtons();
-        // Add the UserPanel to the namePanel
+        userNamePanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
         namePanel.add(userNamePanel);
         userTabbedPane.addTab("Name", namePanel);
 
         JPanel titlePanel = new JPanel(new GridLayout(0, 1));
-        // Create a new UserPanel and add navigation buttons
         UserPanel userTitlePanel = new UserPanel();
-        userTitlePanel.addNavigationButtons();
-        // Add the UserPanel to the titlePanel
+        userTitlePanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
         titlePanel.add(userTitlePanel);
         userTabbedPane.addTab("Title", titlePanel);
 
         // Create the title checkbox
         JCheckBox includeTitleCheckBox = new JCheckBox("Include");
-
-        // Add the title checkbox to the Title panel
         titlePanel.add(includeTitleCheckBox);
 
-        JPanel emailPanel = new JPanel(new GridLayout(0, 1)); 
-        // Create a new UserPanel and add navigation buttons
+        JPanel emailPanel = new JPanel(new GridLayout(0, 1));
         UserPanel userEmailPanel = new UserPanel();
-        userEmailPanel.addNavigationButtons();
-        // Add the UserPanel to the emailPanel
+        userEmailPanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
         emailPanel.add(userEmailPanel);
         userTabbedPane.addTab("Email", emailPanel);
 
         // Create a tabbed pane for References
         JTabbedPane referencesTabbedPane = new JTabbedPane();
-        
         mainTabbedPane.addTab("References", referencesTabbedPane);
 
-        
         // Add user profiles and references to the respective panels
-        for (User user : users) {   
+        for (User user : users) {
             // Add user details to the respective panels
             String[] names = user.getName().split(",");
             for (String name : names) {
-                namePanel.add(new UserPanel("Name", name.trim())); // Create a UserPanel for each name and add it to the name panel
-            }  
+                UserPanel nameUserPanel = new UserPanel("Name", name.trim());
+                nameUserPanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
+                namePanel.add(nameUserPanel);
+            }
 
             String[] titles = user.getTitle().split(",");
             for (String title : titles) {
-                titlePanel.add(new UserPanel("Title", title.trim())); // Create a UserPanel for each title and add it to the title panel
+                UserPanel titleUserPanel = new UserPanel("Title", title.trim());
+                titleUserPanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
+                titlePanel.add(titleUserPanel);
             }
 
             String[] emails = user.getEmail().split(",");
             for (String email : emails) {
-                emailPanel.add(new UserPanel("Email", email.trim())); // Create a UserPanel for each email and add it to the email panel
+                UserPanel emailUserPanel = new UserPanel("Email", email.trim());
+                emailUserPanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
+                emailPanel.add(emailUserPanel);
             }
 
-            
-
             // Add references to the respective panels
-String[] references = user.getReferences().trim().split(",");
-for (int i = 0; i < references.length; i++) {
-    String reference = references[i];
-    ReferencePanel refPanel = createReferencePanel(reference); // Use the new method to create the ReferencePanel
-
-    // Add each reference to a separate tab
-    if (i == 0) {
-        referencesTabbedPane.addTab("Referee 1", refPanel);
-    } else if (i == 1) {
-        referencesTabbedPane.addTab("Referee 2", refPanel);
-    } else if (i == 2) {
-        referencesTabbedPane.addTab("Referee 3", refPanel);
-    }
-}
+            String[] references = user.getReferences().trim().split(",");
+            for (int i = 0; i < references.length; i++) {
+                String reference = references[i];
+                ReferencePanel refPanel = createReferencePanel(reference);
+                // Add each reference to a separate tab
+                if (i == 0) {
+                    referencesTabbedPane.addTab("Referee 1", refPanel);
+                } else if (i == 1) {
+                    referencesTabbedPane.addTab("Referee 2", refPanel);
+                } else if (i == 2) {
+                    referencesTabbedPane.addTab("Referee 3", refPanel);
+                }
+            }
         }
-
         add(mainTabbedPane, BorderLayout.CENTER); // Add the main tabbed pane to the center of the frame
-    }
 
-    
+        prevSectionButton.addActionListener(this);
+        nextSectionButton.addActionListener(this);
+        addProfileButton.addActionListener(this);
+    }
 
     public void showViewer() {
         setVisible(true); // Set the GUIViewer frame visible

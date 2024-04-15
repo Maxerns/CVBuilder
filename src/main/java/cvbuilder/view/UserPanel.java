@@ -24,9 +24,6 @@ public class UserPanel extends JPanel implements ActionListener {
     private JRadioButton dataRadioButton;
     private JButton editButton;
     private JButton deleteButton;
-    private JButton addProfileButton;
-    private JButton nextSectionButton;
-    private JButton prevSectionButton; 
     private String dataType;
     private String data;
     private String references;
@@ -40,6 +37,7 @@ public class UserPanel extends JPanel implements ActionListener {
 
         this.dataType = dataType;
         this.data = data;
+
         setLayout(new BorderLayout());
 
         dataRadioButton = new JRadioButton(data);
@@ -68,22 +66,19 @@ public class UserPanel extends JPanel implements ActionListener {
 
     }
 
-    public void addNavigationButtons() {
+    public void addNavigationButtons(JButton prevSectionButton, JButton nextSectionButton, JButton addProfileButton, String prevSectionCommand, String nextSectionCommand, String addProfileCommand) {
+        prevSectionButton.setActionCommand(prevSectionCommand);
+        nextSectionButton.setActionCommand(nextSectionCommand);
+        addProfileButton.setActionCommand(addProfileCommand);
 
-        prevSectionButton = new JButton("Previous Section");
         prevSectionButton.addActionListener(this);
-    
-        nextSectionButton = new JButton("Next Section");
         nextSectionButton.addActionListener(this);
-
-        addProfileButton = new JButton("Add Profile");
         addProfileButton.addActionListener(this);
-    
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(prevSectionButton);
         buttonPanel.add(nextSectionButton);
         buttonPanel.add(addProfileButton);
-    
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
