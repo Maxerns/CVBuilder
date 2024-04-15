@@ -20,7 +20,6 @@ import javax.swing.border.Border;
  * @author mxgar
  */
 public class UserPanel extends JPanel implements ActionListener {
-
     private JRadioButton dataRadioButton;
     private JButton editButton;
     private JButton deleteButton;
@@ -28,13 +27,11 @@ public class UserPanel extends JPanel implements ActionListener {
     private String data;
     private String references;
 
-    public UserPanel()
-    {
-        //empty constructor
+    public UserPanel() {
+        // empty constructor
     }
 
     public UserPanel(String dataType, String data) {
-
         this.dataType = dataType;
         this.data = data;
 
@@ -46,17 +43,13 @@ public class UserPanel extends JPanel implements ActionListener {
 
         editButton = new JButton("Edit");
         deleteButton = new JButton("Delete");
-        
 
         editButton.addActionListener(this);
         deleteButton.addActionListener(this);
-        
 
         Dimension buttonSize = new Dimension(80, 15);
-        
         editButton.setPreferredSize(buttonSize);
         deleteButton.setPreferredSize(buttonSize);
-        
 
         JPanel centerPanel = new JPanel();
         centerPanel.add(dataRadioButton);
@@ -66,21 +59,7 @@ public class UserPanel extends JPanel implements ActionListener {
 
     }
 
-    public void addNavigationButtons(JButton prevSectionButton, JButton nextSectionButton, JButton addProfileButton, String prevSectionCommand, String nextSectionCommand, String addProfileCommand) {
-        prevSectionButton.setActionCommand(prevSectionCommand);
-        nextSectionButton.setActionCommand(nextSectionCommand);
-        addProfileButton.setActionCommand(addProfileCommand);
-
-        prevSectionButton.addActionListener(this);
-        nextSectionButton.addActionListener(this);
-        addProfileButton.addActionListener(this);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(prevSectionButton);
-        buttonPanel.add(nextSectionButton);
-        buttonPanel.add(addProfileButton);
-        add(buttonPanel, BorderLayout.SOUTH);
-    }
+    
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -163,7 +142,7 @@ public class UserPanel extends JPanel implements ActionListener {
         } 
     }
 
-    private void appendToCSVFile(User user) {
+    public static void appendToCSVFile(User user) {
         try {
             FileWriter fileWriter = new FileWriter("data\\cv_repo_3.csv", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);

@@ -5,14 +5,19 @@
 package cvbuilder.view;
 
 import cvbuilder.model.User;
+import cvbuilder.view.UserPanel;
+import cvbuilder.view.ReferencePanel;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.Files;
@@ -32,48 +37,43 @@ import java.util.prefs.Preferences;
  * @author mxgar
  */
 public class GUIViewer extends JFrame implements ActionListener {
-
-    private JTabbedPane mainTabbedPane; // The main tabbed pane for the GUIViewer
-    private static GUIViewer instance; // The instance of GUIViewer
-    private List<File> filesToRead; // List of files to read
-    private File lastAddedFile; // The last added file
-    private Preferences prefs; // Preferences object to store the path of the last added file
-    private JButton prevSectionButton; // Button to navigate to the previous section
-    private JButton nextSectionButton; // Button to navigate to the next section
-    private JButton addProfileButton; // Button to add a new profile
-    private String prevSectionCommand; // Command for the previous section button
-    private String nextSectionCommand; // Command for the next section button
-    private String addProfileCommand; // Command for the add profile button   
+    private JTabbedPane mainTabbedPane;
+    private static GUIViewer instance;
+    private List<File> filesToRead;
+    private File lastAddedFile;
+    private Preferences prefs;
+    private String references;
+    
 
     private GUIViewer() {
         filesToRead = new ArrayList<>();
-        filesToRead.add(new File("data\\cv_repo_3.csv")); // The default file that is read
-        initPrefs(); // Initialize preferences
+        filesToRead.add(new File("data\\cv_repo_3.csv"));
+        initPrefs();
     }
 
     private void initPrefs() {
         if (prefs == null) {
-            prefs = Preferences.userNodeForPackage(GUIViewer.class); // Get the preferences node for the GUIViewer class
-            String lastAddedFileName = prefs.get("lastAddedFile", null); // Get the path of the last added file from preferences
+            prefs = Preferences.userNodeForPackage(GUIViewer.class);
+            String lastAddedFileName = prefs.get("lastAddedFile", null);
             if (lastAddedFileName != null) {
-                lastAddedFile = new File(lastAddedFileName); // Create a File object for the last added file
-                filesToRead.add(lastAddedFile); // Add the last added file to the list of files to read
+                lastAddedFile = new File(lastAddedFileName);
+                filesToRead.add(lastAddedFile);
             }
         }
     }
 
     public static GUIViewer getInstance() {
         if (instance == null) {
-            instance = new GUIViewer(); // Create a new instance of GUIViewer if it doesn't exist
+            instance = new GUIViewer();
         }
-        return instance; // Return the instance of GUIViewer
+        return instance;
     }
 
     public GUIViewer(List<User> users) {
         filesToRead = new ArrayList<>();
-        filesToRead.add(new File("data\\cv_repo_3.csv")); // Add a default file to read
+        filesToRead.add(new File("data\\cv_repo_3.csv"));
 
-        // Create the menu bar
+        // Create the menu bar and set up the menu items
         JMenuBar jmb = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem loadItem = new JMenuItem("Load");
@@ -91,109 +91,119 @@ public class GUIViewer extends JFrame implements ActionListener {
 
         mainTabbedPane = new JTabbedPane();
 
-         // Initialize the navigation buttons and action commands
-         prevSectionButton = new JButton("Previous Section");
-         nextSectionButton = new JButton("Next Section");
-         addProfileButton = new JButton("Add Profile");
-         prevSectionCommand = "Previous Section";
-         nextSectionCommand = "Next Section";
-         addProfileCommand = "Add Profile";
-
-        // Create a tabbed pane for User
+        // Create the user-related panels and add them to the user tabbed pane
         JTabbedPane userTabbedPane = new JTabbedPane();
         mainTabbedPane.addTab("User", userTabbedPane);
 
-        // Create a panel with a grid layout for names
+        // Create the name, title, and email panels and add them to the user tabbed pane
         JPanel namePanel = new JPanel(new GridLayout(0, 1));
-        UserPanel userNamePanel = new UserPanel();
-        userNamePanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
+        UserPanel userNamePanel = new UserPanel("Name", "");
         namePanel.add(userNamePanel);
         userTabbedPane.addTab("Name", namePanel);
 
         JPanel titlePanel = new JPanel(new GridLayout(0, 1));
-        UserPanel userTitlePanel = new UserPanel();
-        userTitlePanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
+        UserPanel userTitlePanel = new UserPanel("Title", "");
         titlePanel.add(userTitlePanel);
         userTabbedPane.addTab("Title", titlePanel);
 
-        // Create the title checkbox
-        JCheckBox includeTitleCheckBox = new JCheckBox("Include");
-        titlePanel.add(includeTitleCheckBox);
-
         JPanel emailPanel = new JPanel(new GridLayout(0, 1));
-        UserPanel userEmailPanel = new UserPanel();
-        userEmailPanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
+        UserPanel userEmailPanel = new UserPanel("Email", "");
         emailPanel.add(userEmailPanel);
         userTabbedPane.addTab("Email", emailPanel);
 
-        // Create a tabbed pane for References
+        // Create the references tabbed pane and add it to the main tabbed pane
         JTabbedPane referencesTabbedPane = new JTabbedPane();
         mainTabbedPane.addTab("References", referencesTabbedPane);
 
         // Add user profiles and references to the respective panels
         for (User user : users) {
-            // Add user details to the respective panels
-            String[] names = user.getName().split(",");
-            for (String name : names) {
-                UserPanel nameUserPanel = new UserPanel("Name", name.trim());
-                nameUserPanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
-                namePanel.add(nameUserPanel);
-            }
+            addUserDetailsToPanel(user, namePanel, titlePanel, emailPanel);
+            addReferencesToPanel(user, referencesTabbedPane);
+        }
 
-            String[] titles = user.getTitle().split(",");
-            for (String title : titles) {
-                UserPanel titleUserPanel = new UserPanel("Title", title.trim());
-                titleUserPanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
-                titlePanel.add(titleUserPanel);
-            }
+        add(mainTabbedPane, BorderLayout.CENTER);
 
-            String[] emails = user.getEmail().split(",");
-            for (String email : emails) {
-                UserPanel emailUserPanel = new UserPanel("Email", email.trim());
-                emailUserPanel.addNavigationButtons(prevSectionButton, nextSectionButton, addProfileButton, prevSectionCommand, nextSectionCommand, addProfileCommand);
-                emailPanel.add(emailUserPanel);
-            }
+        // Add the navigation buttons to the bottom of the main tabbed pane
+        addNavigationButtons();
+    }
 
-            // Add references to the respective panels
-            String[] references = user.getReferences().trim().split(",");
-            for (int i = 0; i < references.length; i++) {
-                String reference = references[i];
-                ReferencePanel refPanel = createReferencePanel(reference);
-                // Add each reference to a separate tab
-                if (i == 0) {
-                    referencesTabbedPane.addTab("Referee 1", refPanel);
-                } else if (i == 1) {
-                    referencesTabbedPane.addTab("Referee 2", refPanel);
-                } else if (i == 2) {
-                    referencesTabbedPane.addTab("Referee 3", refPanel);
-                }
+    private void addUserDetailsToPanel(User user, JPanel namePanel, JPanel titlePanel, JPanel emailPanel) {
+        // Add name details
+        String[] names = user.getName().split(",");
+        for (String name : names) {
+            UserPanel nameUserPanel = new UserPanel("Name", name.trim());
+            namePanel.add(nameUserPanel);
+        }
+
+        // Add title details
+        String[] titles = user.getTitle().split(",");
+        for (String title : titles) {
+            UserPanel titleUserPanel = new UserPanel("Title", title.trim());
+            titlePanel.add(titleUserPanel);
+        }
+
+        // Add email details
+        String[] emails = user.getEmail().split(",");
+        for (String email : emails) {
+            UserPanel emailUserPanel = new UserPanel("Email", email.trim());
+            emailPanel.add(emailUserPanel);
+        }
+    }
+
+    private void addReferencesToPanel(User user, JTabbedPane referencesTabbedPane) {
+        String[] references = user.getReferences().trim().split(",");
+        for (int i = 0; i < references.length; i++) {
+            String reference = references[i];
+            ReferencePanel refPanel = new ReferencePanel(reference);
+            if (i == 0) {
+                referencesTabbedPane.addTab("Referee 1", refPanel);
+            } else if (i == 1) {
+                referencesTabbedPane.addTab("Referee 2", refPanel);
+            } else if (i == 2) {
+                referencesTabbedPane.addTab("Referee 3", refPanel);
             }
         }
-        add(mainTabbedPane, BorderLayout.CENTER); // Add the main tabbed pane to the center of the frame
-
-        prevSectionButton.addActionListener(this);
-        nextSectionButton.addActionListener(this);
-        addProfileButton.addActionListener(this);
     }
+
+  
 
     public void showViewer() {
-        setVisible(true); // Set the GUIViewer frame visible
+        setVisible(true);
     }
+
+    public static void appendToCSVFile(User user) {
+        try {
+            FileWriter fileWriter = new FileWriter("data\\cv_repo_3.csv", true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+    
+            // Write user data in the required format
+            bufferedWriter.write("User,Title," + user.getTitle());
+            bufferedWriter.newLine();
+            bufferedWriter.write("User,Name," + user.getName());
+            bufferedWriter.newLine();
+            bufferedWriter.write("User,Email," + user.getEmail());
+            bufferedWriter.newLine();
+    
+            bufferedWriter.close();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        initPrefs(); // Initialize the preferences
+        initPrefs();
 
         if (e.getActionCommand().equals("Quit")) {
-            System.exit(0); // Exit the program if "Quit" is selected
+            System.exit(0);
         } else if (e.getActionCommand().equals("Load")) {
-            // Open a file dialog to choose a file
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
             int result = fileChooser.showOpenDialog(this);
 
             if (result == JFileChooser.APPROVE_OPTION) {
-                // If a file is selected, copy it to the "data" directory and add it to the list of files to read
                 File selectedFile = fileChooser.getSelectedFile();
                 File dataDir = new File("data");
                 if (!dataDir.exists()) {
@@ -210,10 +220,86 @@ public class GUIViewer extends JFrame implements ActionListener {
 
                 filesToRead.add(newFile);
                 lastAddedFile = newFile;
-                prefs.put("lastAddedFile", newFile.getPath()); // Save the path of the last added file in preferences
+                prefs.put("lastAddedFile", newFile.getPath());
+            }
+        } else if (e.getActionCommand().equals("Add Profile")) {
+            JTextField titleField = new JTextField(10);
+            JTextField nameField = new JTextField(10);
+            JTextField emailField = new JTextField(10);
+
+            JPanel panel = new JPanel(new GridLayout(4, 2));
+            panel.add(new JLabel("Title:"));
+            panel.add(titleField);
+            panel.add(new JLabel("Name:"));
+            panel.add(nameField);
+            panel.add(new JLabel("Email:"));
+            panel.add(emailField);
+
+            int result = JOptionPane.showConfirmDialog(this, panel, "Add New User Profile", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                String title = titleField.getText();
+                String name = nameField.getText();
+                String email = emailField.getText();
+
+                // Making it so you have to have input for all the required fields
+                if (title.isEmpty() || name.isEmpty() || email.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "All fields must be filled out.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Validating if the email entered is a valid input
+                if (!email.contains("@") || email.indexOf('@') > email.lastIndexOf('.')) {
+                    JOptionPane.showMessageDialog(this, "Invalid email address. Please include '@' and a domain in the email.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                User newUser = new User(title, name, email, references);
+                appendToCSVFile(newUser);
+            }
+        } else if (e.getActionCommand().equals("Next Section")) {
+            JTabbedPane tabbedPane = getUserTabbedPane();
+            int currentIndex = tabbedPane.getSelectedIndex();
+            int nextIndex = currentIndex + 1;
+            if (nextIndex < tabbedPane.getTabCount()) {
+                tabbedPane.setSelectedIndex(nextIndex);
+            }
+        } else if (e.getActionCommand().equals("Previous Section")) {
+            JTabbedPane tabbedPane = getUserTabbedPane();
+            int currentIndex = tabbedPane.getSelectedIndex();
+            int previousIndex = currentIndex - 1;
+            if (previousIndex >= 0) {
+                tabbedPane.setSelectedIndex(previousIndex);
             }
         }
     }
+
+    private JTabbedPane getUserTabbedPane() {
+        return (JTabbedPane) mainTabbedPane.getComponent(0); // User tabbed pane is the first component
+    }
+
+    private void addNavigationButtons() {
+        JButton prevSectionButton = new JButton("Previous Section");
+        prevSectionButton.addActionListener(this);
+
+        JButton nextSectionButton = new JButton("Next Section");
+        nextSectionButton.addActionListener(this);
+
+        JButton addProfileButton = new JButton("Add Profile");
+        addProfileButton.addActionListener(this);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(prevSectionButton);
+        buttonPanel.add(nextSectionButton);
+        buttonPanel.add(addProfileButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        
+    }
+
+    
+
 
     public List<User> readUserProfilesFromFile(File file) {
         // Read user profiles from a given file and return a list of User objects
@@ -292,9 +378,4 @@ public class GUIViewer extends JFrame implements ActionListener {
         return users;
     }
 
-    private ReferencePanel createReferencePanel(String reference) {
-        ReferencePanel refPanel = new ReferencePanel(reference.trim());
-        refPanel.addNavigationButtons();
-        return refPanel;
-    }
 }
