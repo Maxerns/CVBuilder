@@ -5,8 +5,6 @@
 package cvbuilder.view;
 
 import cvbuilder.model.User;
-import cvbuilder.view.UserPanel;
-import cvbuilder.view.ReferencePanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -15,20 +13,15 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.prefs.Preferences;
 
 
@@ -322,61 +315,74 @@ public class GUIViewer extends JFrame implements ActionListener {
     
 
 
-    public List<User> readUserProfilesFromFile(File file) {
-        // Read user profiles from a given file and return a list of User objects
-        List<User> users = new ArrayList<>();
+    // Method to read user profiles from a single file
+public List<User> readUserProfilesFromFile(File file) {
+    // Initialize an empty list of users
+    List<User> users = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            String title = "";
-            String name = "";
-            String email = "";
-            String references = "";
-            boolean isUserSection = false;
-            boolean isReferenceSection = false;
+    // Try to open the file with a BufferedReader
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        String line;
+        // Initialize variables to hold user data
+        String title = "";
+        String name = "";
+        String email = "";
+        String references = "";
+        // Flags to track which section of the file we're in
+        boolean isUserSection = false;
+        boolean isReferenceSection = false;
 
-            while ((line = reader.readLine()) != null) {
-                String[] fields = line.split(",");
-                if (fields[0].equalsIgnoreCase("Section") && fields[1].equalsIgnoreCase("Sub-Section")) {
-                    // Skip the header line
-                    continue;
+        // Read the file line by line
+        while ((line = reader.readLine()) != null) {
+            // Split the line into fields
+            String[] fields = line.split(",");
+            // Check if the line is a header line and skip it
+            if (fields[0].equalsIgnoreCase("Section") && fields[1].equalsIgnoreCase("Sub-Section")) {
+                continue;
+            }
+
+            // Check which section we're in
+            if (fields[0].equalsIgnoreCase("User")) {
+                isUserSection = true;
+                isReferenceSection = false;
+            } else if (fields[0].equalsIgnoreCase("References")) {
+                isUserSection = false;
+                isReferenceSection = true;
+            } else {
+                isUserSection = false;
+                isReferenceSection = false;
+            }
+
+            // If we're in the User section, read the user data
+            if (isUserSection) {
+                if (fields[1].equalsIgnoreCase("Name")) {
+                    name = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                } else if (fields[1].equalsIgnoreCase("Title")) {
+                    title = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                } else if (fields[1].equalsIgnoreCase("Email")) {
+                    email = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                    // Create a new User object and add it to the list
+                    User user = new User(title, name, email, references.trim());
+                    users.add(user);
+                    // Reset the user data variables
+                    title = "";
+                    name = "";
+                    email = "";
+                    references = "";
                 }
-
-                if (fields[0].equalsIgnoreCase("User")) {
-                    isUserSection = true;
-                    isReferenceSection = false;
-                } else if (fields[0].equalsIgnoreCase("References")) {
-                    isUserSection = false;
-                    isReferenceSection = true;
-                } else {
-                    isUserSection = false;
-                    isReferenceSection = false;
-                }
-
-                if (isUserSection) {
-                    if (fields[1].equalsIgnoreCase("Name")) {
-                        name = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                    } else if (fields[1].equalsIgnoreCase("Title")) {
-                        title = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                    } else if (fields[1].equalsIgnoreCase("Email")) {
-                        email = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                        User user = new User(title, name, email, references);
+            // If we're in the References section, read the reference data
+            } else if (isReferenceSection) {
+                if (fields[1].equalsIgnoreCase("Referee 1") || fields[1].equalsIgnoreCase("Referee 2")) {
+                    String referenceText = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
+                    // Replace special characters with newlines
+                    referenceText = referenceText.replaceAll("%%%%", "\n");
+                    referenceText = referenceText.replaceAll("/////", "\n");
+                    references += referenceText + "\n\n";
+                    // If we've read both references, create a new User object and add it to the list
+                    if (fields[1].equalsIgnoreCase("Referee 2")) {
+                        User user = new User(title, name, email, references.trim());
                         users.add(user);
-                        title = "";
-                        name = "";
-                        email = "";
-                    }
-                } else if (isReferenceSection) {
-                    if (fields[1].equalsIgnoreCase("Referee 1") || fields[1].equalsIgnoreCase("Referee 2")) {
-                        String referenceText = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
-                        referenceText = referenceText.replaceAll("%%%%", " ");
-                        referenceText = referenceText.replaceAll("////", ",");
-                        references += referenceText + "\n";
-                    }
-
-                    if (isReferenceSection && fields[1].equalsIgnoreCase("Referee 2")) {
-                        User user = new User(title, name, email, references);
-                        users.add(user);
+                        // Reset the user data variables
                         title = "";
                         name = "";
                         email = "";
@@ -384,19 +390,26 @@ public class GUIViewer extends JFrame implements ActionListener {
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-        return users;
+    // Catch any IOExceptions that occur
+    } catch (IOException e) {
+        e.printStackTrace();
     }
 
-    public List<User> readUserProfilesFromAllFiles() {
-        List<User> users = new ArrayList<>();
-        for (File file : filesToRead) {
-            users.addAll(readUserProfilesFromFile(file));
-        }
-        return users;
-    }
+    // Return the list of users
+    return users;
+}
 
+// Method to read user profiles from all files
+public List<User> readUserProfilesFromAllFiles() {
+    // Initialize an empty list of users
+    List<User> users = new ArrayList<>();
+    // For each file in the list of files to read
+    for (File file : filesToRead) {
+        // Read the user profiles from the file and add them to the list
+        users.addAll(readUserProfilesFromFile(file));
+    }
+    // Return the list of users
+    return users;
+    }
 }
