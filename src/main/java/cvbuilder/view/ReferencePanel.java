@@ -6,6 +6,7 @@ package cvbuilder.view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
@@ -24,13 +25,13 @@ import java.util.List;
  */
 
 
-public class ReferencePanel extends JPanel {
-    // Lists to hold the JTextAreas and JButtons
+ public class ReferencePanel extends JPanel {
     private List<JTextArea> referenceTextAreas;
     private List<JButton> addButtons;
+    private List<JButton> editButtons;
+    private List<JButton> deleteButtons;
 
     public ReferencePanel(String referenceText) {
-        // Set the layout of the panel
         setLayout(new BorderLayout());
 
         // Split the referenceText into separate references based on double line breaks
@@ -41,9 +42,10 @@ public class ReferencePanel extends JPanel {
         innerPanel.setPreferredSize(new Dimension(500, 400));
         innerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the inner panel
 
-        // Initialize the lists
         referenceTextAreas = new ArrayList<>();
         addButtons = new ArrayList<>();
+        editButtons = new ArrayList<>();
+        deleteButtons = new ArrayList<>();
 
         // Iterate over each reference
         for (String reference : references) {
@@ -71,7 +73,7 @@ public class ReferencePanel extends JPanel {
             // Add the text area to the section panel
             sectionPanel.add(sectionTextArea, BorderLayout.CENTER);
 
-            // Create a new text area and add button for the reference
+            // Create a new text area, add button, edit button, and delete button for the reference
             JTextArea referenceTextArea = new JTextArea();
             referenceTextArea.setPreferredSize(new Dimension(150, 40));
             referenceTextAreas.add(referenceTextArea);
@@ -79,7 +81,6 @@ public class ReferencePanel extends JPanel {
             // Determine the next referee number
             int nextRefNumber = getNextRefereeNumber();
 
-            // Create an "Add Reference" button and add an action listener to it
             JButton addButton = new JButton("Add Reference");
             addButton.addActionListener(e -> {
                 String referenceText1 = referenceTextArea.getText();
@@ -92,11 +93,31 @@ public class ReferencePanel extends JPanel {
             });
             addButtons.add(addButton);
 
-            // Create a panel to hold the text area and add button
+            JButton editButton = new JButton("Edit");
+            editButton.addActionListener(e -> {
+                String currentReference = sectionTextArea.getText().replace("\n", "////");
+                String editedReference = JOptionPane.showInputDialog("Edit Reference", currentReference);
+                if (editedReference != null && !editedReference.isEmpty()) {
+                    updateReferenceInCSVFile(nextRefNumber, editedReference);
+                    sectionTextArea.setText(editedReference.replaceAll("////", "\n"));
+                }
+            });
+            editButtons.add(editButton);
+
+            JButton deleteButton = new JButton("Delete");
+            deleteButton.addActionListener(e -> {
+                deleteReferenceFromCSVFile(nextRefNumber);
+                sectionPanel.setVisible(false);
+            });
+            deleteButtons.add(deleteButton);
+
+            // Create a panel to hold the text area, add button, edit button, and delete button
             JPanel referencePanel = new JPanel(new BorderLayout());
             referencePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // Add padding around the reference panel
             referencePanel.add(referenceTextArea, BorderLayout.CENTER);
             referencePanel.add(addButton, BorderLayout.EAST);
+            referencePanel.add(editButton, BorderLayout.WEST);
+            referencePanel.add(deleteButton, BorderLayout.SOUTH);
 
             // Add the reference panel to the section panel
             sectionPanel.add(referencePanel, BorderLayout.SOUTH);
@@ -108,17 +129,18 @@ public class ReferencePanel extends JPanel {
         // Add the inner panel to the main panel
         add(innerPanel, BorderLayout.CENTER);
 
-        // Create a panel to hold the text areas and add buttons
-        JPanel bottomPanel = new JPanel(new GridLayout(referenceTextAreas.size(), 2, 10, 10));
+        // Create a panel to hold the text areas, add buttons, edit buttons, and delete buttons
+        JPanel bottomPanel = new JPanel(new GridLayout(referenceTextAreas.size(), 4, 10, 10));
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the bottom panel
         for (int i = 0; i < referenceTextAreas.size(); i++) {
             bottomPanel.add(referenceTextAreas.get(i));
             bottomPanel.add(addButtons.get(i));
+            bottomPanel.add(editButtons.get(i));
+            bottomPanel.add(deleteButtons.get(i));
         }
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    // Method to get the next referee number
     private int getNextRefereeNumber() {
         try {
             // Read the CSV file and find the highest referee number
@@ -139,7 +161,6 @@ public class ReferencePanel extends JPanel {
         }
     }
 
-    // Method to append the reference to the CSV file
     private void appendToCSVFile(String referenceText, int refNumber) {
         try {
             FileWriter fileWriter = new FileWriter("data\\cv_repo_3.csv", true);
@@ -149,6 +170,72 @@ public class ReferencePanel extends JPanel {
             bufferedWriter.write("References,Referee " + refNumber + "," + referenceText.replace("\n", "////"));
             bufferedWriter.newLine();
 
+            bufferedWriter.close();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateReferenceInCSVFile(int refNumber, String newReferenceText) {
+        try {
+            // Read the CSV file into a list of lines
+            List<String> lines = Files.readAllLines(Paths.get("data\\cv_repo_3.csv"));
+
+            // Find the line with the reference to update
+            int lineIndex = -1;
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if (line.startsWith("References,Referee " + refNumber)) {
+                    lineIndex = i;
+                    break;
+                }
+            }
+
+            // Update the reference text in the line
+            if (lineIndex != -1) {
+                lines.set(lineIndex, "References,Referee " + refNumber + "," + newReferenceText.replace("\n", "////"));
+            }
+
+            // Write the updated lines back to the CSV file
+            FileWriter fileWriter = new FileWriter("data\\cv_repo_3.csv");
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            for (String line : lines) {
+                bufferedWriter.write(line);
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.close();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteReferenceFromCSVFile(int refNumber) {
+        try {
+            // Read the CSV file into a list of lines
+            List<String> lines = Files.readAllLines(Paths.get("data\\cv_repo_3.csv"));
+
+            // Remove the line with the reference to delete
+            int lineIndex = -1;
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if (line.startsWith("References,Referee " + refNumber)) {
+                    lineIndex = i;
+                    break;
+                }
+            }
+            if (lineIndex != -1) {
+                lines.remove(lineIndex);
+            }
+
+            // Write the updated lines back to the CSV file
+            FileWriter fileWriter = new FileWriter("data\\cv_repo_3.csv");
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            for (String line : lines) {
+                bufferedWriter.write(line);
+                bufferedWriter.newLine();
+            }
             bufferedWriter.close();
             fileWriter.close();
         } catch (IOException e) {
