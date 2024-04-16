@@ -376,7 +376,7 @@ public List<User> readUserProfilesFromFile(File file) {
                     String referenceText = String.join(",", Arrays.copyOfRange(fields, 2, fields.length));
                     // Replace special characters with newlines
                     referenceText = referenceText.replaceAll("%%%%", "\n");
-                    referenceText = referenceText.replaceAll("/////", "\n");
+                    referenceText = referenceText.replaceAll("////", "\n");
                     references += referenceText + "\n\n";
                     // If we've read both references, create a new User object and add it to the list
                     if (fields[1].equalsIgnoreCase("Referee 2")) {
