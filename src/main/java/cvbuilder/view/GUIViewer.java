@@ -257,26 +257,47 @@ public class GUIViewer extends JFrame implements ActionListener {
                 User newUser = new User(title, name, email, references);
                 appendToCSVFile(newUser);
             }
-        } else if (e.getActionCommand().equals("Next Section")) {
-            JTabbedPane tabbedPane = getUserTabbedPane();
-            int currentIndex = tabbedPane.getSelectedIndex();
-            int nextIndex = currentIndex + 1;
-            if (nextIndex < tabbedPane.getTabCount()) {
-                tabbedPane.setSelectedIndex(nextIndex);
-            }
+        }  else if (e.getActionCommand().equals("Next Section")) {
+            // Get the currently active tabbed pane
+            JTabbedPane activeTabbedPane = getActiveTabbedPane();
+            // Update the active tabbed pane to go to the next tab
+            updateTabbedPane(activeTabbedPane, 1);
         } else if (e.getActionCommand().equals("Previous Section")) {
-            JTabbedPane tabbedPane = getUserTabbedPane();
-            int currentIndex = tabbedPane.getSelectedIndex();
-            int previousIndex = currentIndex - 1;
-            if (previousIndex >= 0) {
-                tabbedPane.setSelectedIndex(previousIndex);
-            }
+            // Get the currently active tabbed pane
+            JTabbedPane activeTabbedPane = getActiveTabbedPane();
+            // Update the active tabbed pane to go to the previous tab
+            updateTabbedPane(activeTabbedPane, -1);
         }
     }
-
-    private JTabbedPane getUserTabbedPane() {
-        return (JTabbedPane) mainTabbedPane.getComponent(0); // User tabbed pane is the first component
-    }
+        
+        private JTabbedPane getActiveTabbedPane() {
+            // Get the user and references tabbed panes
+            JTabbedPane userTabbedPane = getUserTabbedPane();
+            JTabbedPane referencesTabbedPane = getReferencesTabbedPane();
+            // Return the currently active tabbed pane
+            return mainTabbedPane.getSelectedComponent() == userTabbedPane ? userTabbedPane : referencesTabbedPane;
+        }
+        
+        private void updateTabbedPane(JTabbedPane tabbedPane, int direction) {
+            // Get the current index of the selected tab
+            int currentIndex = tabbedPane.getSelectedIndex();
+            // Calculate the new index based on the direction
+            int newIndex = currentIndex + direction;
+            // If the new index is valid, set it as the selected index
+            if (newIndex >= 0 && newIndex < tabbedPane.getTabCount()) {
+                tabbedPane.setSelectedIndex(newIndex);
+            }
+        }
+        
+        private JTabbedPane getUserTabbedPane() {
+            // Return the user tabbed pane (the first component of the main tabbed pane)
+            return (JTabbedPane) mainTabbedPane.getComponent(0);
+        }
+        
+        private JTabbedPane getReferencesTabbedPane() {
+            // Return the references tabbed pane (the second component of the main tabbed pane)
+            return (JTabbedPane) mainTabbedPane.getComponent(1);
+        }
 
     private void addNavigationButtons() {
         JButton prevSectionButton = new JButton("Previous Section");
