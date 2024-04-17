@@ -8,7 +8,6 @@ package cvbuilder;
 import cvbuilder.model.User;
 import cvbuilder.view.GUIViewer;
 import java.util.List;
-import javax.swing.SwingUtilities;
 
 /**
  *

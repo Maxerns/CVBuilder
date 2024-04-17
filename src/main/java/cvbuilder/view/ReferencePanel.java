@@ -28,12 +28,12 @@ import java.util.List;
  */
 
 public class ReferencePanel extends JPanel {
-    private List<JTextArea> referenceTextAreas;
-    private List<JButton> addButtons;
-    private List<JButton> editButtons;
-    private List<JButton> deleteButtons;
-    private List<JRadioButton> radioButtons;
-    private ButtonGroup radioButtonGroup;
+    private List<JTextArea> referenceTextAreas; // List of text areas to hold the reference text
+    private List<JButton> addButtons; // List of add buttons
+    private List<JButton> editButtons; // List of edit buttons
+    private List<JButton> deleteButtons; // List of delete buttons
+    private List<JRadioButton> radioButtons; // List of radio buttons
+    private ButtonGroup radioButtonGroup; // Button group for the radio buttons
 
     public ReferencePanel(String referenceText) {
         setLayout(new BorderLayout());
@@ -273,5 +273,38 @@ public class ReferencePanel extends JPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    // This method returns the selected radio button from the list of radio buttons.
+    public JRadioButton getRadioButton() {
+        // Loop through each radio button.
+        for (JRadioButton radioButton : radioButtons) {
+            // If the radio button is selected, return it.
+            if (radioButton.isSelected()) {
+                return radioButton;
+            }
+        }
+        // If no radio button is selected, return the first one if the list is not empty.
+        if (!radioButtons.isEmpty()) {
+            return radioButtons.get(0);
+        }
+        // If the list of radio buttons is empty, return null.
+        return null;
+    }
+
+    // This method returns the text from the reference text areas.
+    public String getReferenceText() {
+        // Create a StringBuilder to build the reference text.
+        StringBuilder referenceText = new StringBuilder();
+        // Loop through each text area.
+        for (JTextArea textArea : referenceTextAreas) {
+            // If the text area is not empty, append its text to the reference text.
+            if (!textArea.getText().isEmpty()) {
+                referenceText.append(textArea.getText().replace("\n", "////")).append(",");
+            }
+        }
+        // Convert the StringBuilder to a String and return it.
+        return referenceText.toString();
     }
 }
