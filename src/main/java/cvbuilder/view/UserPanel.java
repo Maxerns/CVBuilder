@@ -26,6 +26,8 @@ public class UserPanel extends JPanel implements ActionListener {
     private String dataType;
     private String data;
     private String references;
+    private static JCheckBox includeCheckBox;
+    private static boolean isCheckBoxAdded = false;
 
     public UserPanel() {
         // empty constructor
@@ -55,6 +57,15 @@ public class UserPanel extends JPanel implements ActionListener {
         centerPanel.add(dataRadioButton);
         centerPanel.add(editButton);
         centerPanel.add(deleteButton);
+        if (dataType.equals("Title") && !isCheckBoxAdded) {
+            includeCheckBox = new JCheckBox("Include");
+            JPanel checkBoxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            checkBoxPanel.add(includeCheckBox);
+            add(checkBoxPanel, BorderLayout.NORTH);
+            isCheckBoxAdded = true;
+        }
+
+        
         add(centerPanel, BorderLayout.CENTER);
 
     }

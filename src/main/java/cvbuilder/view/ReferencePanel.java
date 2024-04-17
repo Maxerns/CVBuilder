@@ -7,6 +7,7 @@ package cvbuilder.view;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -26,8 +27,7 @@ import java.util.List;
  * @author mxgar
  */
 
-
- public class ReferencePanel extends JPanel {
+public class ReferencePanel extends JPanel {
     private List<JTextArea> referenceTextAreas;
     private List<JButton> addButtons;
     private List<JButton> editButtons;
@@ -50,15 +50,21 @@ import java.util.List;
         addButtons = new ArrayList<>();
         editButtons = new ArrayList<>();
         deleteButtons = new ArrayList<>();
-        radioButtons = new ArrayList<>(); 
-        radioButtonGroup = new ButtonGroup(); 
+        radioButtons = new ArrayList<>();
+        radioButtonGroup = new ButtonGroup();
 
         // Iterate over each reference
         for (String reference : references) {
             // Create a panel for each reference with a titled border
             JPanel sectionPanel = new JPanel(new BorderLayout());
             Border blackline = BorderFactory.createTitledBorder("Reference Section");
-            sectionPanel.setBorder(BorderFactory.createCompoundBorder(blackline, BorderFactory.createEmptyBorder(10, 10, 10, 10))); // Add padding around the section panel
+            sectionPanel.setBorder(
+                    BorderFactory.createCompoundBorder(blackline, BorderFactory.createEmptyBorder(10, 10, 10, 10))); // Add
+                                                                                                                     // padding
+                                                                                                                     // around
+                                                                                                                     // the
+                                                                                                                     // section
+                                                                                                                     // panel
             sectionPanel.setPreferredSize(new Dimension(450, 100));
 
             // Split the reference into separate lines
@@ -83,14 +89,20 @@ import java.util.List;
 
             // Create a panel to hold the radio button and text area
             JPanel textAndRadioButtonPanel = new JPanel(new BorderLayout());
-            textAndRadioButtonPanel.add(radioButton, BorderLayout.WEST); 
+            textAndRadioButtonPanel.add(radioButton, BorderLayout.WEST);
             textAndRadioButtonPanel.add(sectionTextArea, BorderLayout.CENTER);
 
             // Add the panel to the section panel instead of the text area
             sectionPanel.add(textAndRadioButtonPanel, BorderLayout.CENTER);
 
+            // Create a checkbox for the reference
+            JCheckBox includeCheckBox = new JCheckBox("Include");
 
-            // Create a new text area, add button, edit button, and delete button for the reference
+            // Add the checkbox to the section panel
+            sectionPanel.add(includeCheckBox, BorderLayout.NORTH);
+
+            // Create a new text area, add button, edit button, and delete button for the
+            // reference
             JTextArea referenceTextArea = new JTextArea();
             referenceTextArea.setPreferredSize(new Dimension(150, 40));
             referenceTextAreas.add(referenceTextArea);
@@ -128,9 +140,11 @@ import java.util.List;
             });
             deleteButtons.add(deleteButton);
 
-            // Create a panel to hold the text area, add button, edit button, and delete button
+            // Create a panel to hold the text area, add button, edit button, and delete
+            // button
             JPanel referencePanel = new JPanel(new BorderLayout());
-            referencePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // Add padding around the reference panel
+            referencePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // Add padding around the reference
+                                                                                   // panel
             referencePanel.add(referenceTextArea, BorderLayout.CENTER);
             referencePanel.add(addButton, BorderLayout.EAST);
             referencePanel.add(editButton, BorderLayout.WEST);
@@ -146,7 +160,8 @@ import java.util.List;
         // Add the inner panel to the main panel
         add(innerPanel, BorderLayout.CENTER);
 
-        // Create a panel to hold the text areas, add buttons, edit buttons, and delete buttons
+        // Create a panel to hold the text areas, add buttons, edit buttons, and delete
+        // buttons
         JPanel bottomPanel = new JPanel(new GridLayout(referenceTextAreas.size(), 4, 10, 10));
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the bottom panel
         for (int i = 0; i < referenceTextAreas.size(); i++) {
