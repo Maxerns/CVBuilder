@@ -5,9 +5,11 @@
 package cvbuilder.view;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -30,6 +32,8 @@ import java.util.List;
     private List<JButton> addButtons;
     private List<JButton> editButtons;
     private List<JButton> deleteButtons;
+    private List<JRadioButton> radioButtons;
+    private ButtonGroup radioButtonGroup;
 
     public ReferencePanel(String referenceText) {
         setLayout(new BorderLayout());
@@ -46,6 +50,8 @@ import java.util.List;
         addButtons = new ArrayList<>();
         editButtons = new ArrayList<>();
         deleteButtons = new ArrayList<>();
+        radioButtons = new ArrayList<>(); 
+        radioButtonGroup = new ButtonGroup(); 
 
         // Iterate over each reference
         for (String reference : references) {
@@ -70,8 +76,19 @@ import java.util.List;
                 sectionTextArea.append(line.trim() + "\n");
             }
 
-            // Add the text area to the section panel
-            sectionPanel.add(sectionTextArea, BorderLayout.CENTER);
+            // Create a radio button for the reference
+            JRadioButton radioButton = new JRadioButton();
+            radioButtons.add(radioButton);
+            radioButtonGroup.add(radioButton);
+
+            // Create a panel to hold the radio button and text area
+            JPanel textAndRadioButtonPanel = new JPanel(new BorderLayout());
+            textAndRadioButtonPanel.add(radioButton, BorderLayout.WEST); 
+            textAndRadioButtonPanel.add(sectionTextArea, BorderLayout.CENTER);
+
+            // Add the panel to the section panel instead of the text area
+            sectionPanel.add(textAndRadioButtonPanel, BorderLayout.CENTER);
+
 
             // Create a new text area, add button, edit button, and delete button for the reference
             JTextArea referenceTextArea = new JTextArea();
